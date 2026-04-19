@@ -13,10 +13,7 @@ struct MenuScreen: View {
     var onLogout: (() -> Void)?
     
     @StateObject private var userViewModel = UserViewModel()
-    
-    private let categories = [
-        "Lunch", "Main", "Deserts", "A La Carte", "Specials"
-    ]
+    @StateObject private var menuViewModel = MenuViewModel()
     
     var body: some View {
         NavigationStack(path: $navPath) {
@@ -24,7 +21,11 @@ struct MenuScreen: View {
                 LazyVStack(spacing: 0, pinnedViews: .sectionHeaders) {
                     hero()
                     categoryFilters()
-                    menus()
+                    if menuViewModel.isFetching && menuViewModel.menuItems.isEmpty {
+                        ProgressView()
+                    } else {
+                        menus()
+                    }
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
@@ -51,6 +52,9 @@ struct MenuScreen: View {
             }
             .navigationDestination(for: String.self) { _ in
                 ProfileScreen(onLogout: onLogout)
+            }
+            .task {
+                await menuViewModel.fetch()
             }
         }
     }
@@ -101,12 +105,17 @@ struct MenuScreen: View {
             
             ScrollView(.horizontal) {
                 LazyHStack(spacing: 10) {
-                    ForEach(categories, id: \.self) {
-                        Button($0) {
-                            
+                    if menuViewModel.categories.isEmpty && menuViewModel.isFetching {
+                        ProgressView()
+                    } else {
+                        ForEach(menuViewModel.categories, id: \.id) { category in
+                            Button(category.name) {
+                                menuViewModel.toggleCategory(id: category.id)
+                            }
+                            .asCategoryButton(selected: menuViewModel.isSelected(category))
                         }
-                        .asCategoryButton(selected: $0 == "Lunch")
                     }
+                        
                 }
                 .padding(.horizontal, 25)
             }
@@ -119,42 +128,11 @@ struct MenuScreen: View {
     }
     
     private func menus() -> some View {
-        ForEach(0..<100) { _ in
-            VStack(alignment: .leading, spacing: 0) {
-                HStack(alignment: .top, spacing: 10) {
-                    VStack(alignment: .leading, spacing: 5) {
-                        Text("Greek Salad")
-                            .foregroundStyle(Color.DS.highlightBlack)
-                            .font(.DS.cardTitle)
-                        Text("The famous greek salad of crispy lettuce, peppers, olives and our Chicago style feta cheese, garnished with crunchy garlic and rosemary croutons. ")
-                            .lineLimit(3)
-                            .foregroundStyle(Color.DS.primaryGreen)
-                            .font(.DS.paragraphText)
-                        Text("$12.99")
-                            .foregroundStyle(Color.DS.primaryGreen)
-                            .font(.DS.highlightText)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    AsyncImage(
-                        url: URL(string: "https://fastly.picsum.photos/id/365/200/300.jpg?hmac=n_4DxqK0o938eabBZRnEywWtPwgF2MKoTfnRmJ7vlKQ"),
-                        content: { img in
-                            img.resizable().scaledToFill()
-                                .frame(width: 80, height: 80)
-                                .clipShape(RoundedRectangle(cornerRadius: 16))
-                        },
-                        placeholder: {
-                            RoundedRectangle(cornerRadius: 16)
-                                .fill(Color.DS.highlightWhite)
-                                .frame(width: 80, height: 80)
-                                .overlay {
-                                    ProgressView()
-                                }
-                        })
-                }
-                .padding(20)
-                Color.DS.highlightWhite.frame(height: 1)
-            }
+        
+        ForEach(menuViewModel.menuItems, id: \.id) { menuItem in
+            MenuItemCard(menuItem)
         }
+
     }
 }
 
