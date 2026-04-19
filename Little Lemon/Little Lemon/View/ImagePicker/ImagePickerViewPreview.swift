@@ -25,12 +25,16 @@ struct ImagePickerView: UIViewControllerRepresentable {
         
         func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
             
-            guard let result = results.first else { return onComplete(nil) }
+            guard let result = results.first else {
+                return picker.dismiss(animated: true) {
+                    self.onComplete(nil)
+                }
+            }
                 
             let provider = result.itemProvider
             if provider.canLoadObject(ofClass: UIImage.self) {
                 provider.loadObject(ofClass: UIImage.self) { [onComplete] (image, error) in
-                    print(image, error)
+//                    print(image, error)
                     DispatchQueue.main.async {
                         if let selectedImage = image as? UIImage {
                             onComplete(selectedImage)
