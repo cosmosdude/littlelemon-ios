@@ -56,6 +56,7 @@ struct MenuScreen: View {
                     .font(.DS.subtitle)
                     .foregroundStyle(Color.DS.highlightWhite)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             
             VStack(alignment: .leading, spacing: 20) {
                 HStack(alignment: .top, spacing: 5) {

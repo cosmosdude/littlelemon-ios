@@ -9,19 +9,17 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @State private var isLoggedIn = false
+    @StateObject private var viewModel = LoginViewModel()
     
     var body: some View {
-        if isLoggedIn {
+        if viewModel.isLoggedIn {
             MenuScreen(onLogout: {
-                withAnimation {
-                    isLoggedIn = false
-                }
+                viewModel.logout()
             })
         } else {
-            OnboardingScreen(onLogin: {
+            OnboardingScreen(onLogin: { user in
                 withAnimation {
-                    isLoggedIn = true
+                    viewModel.login(user)
                 }
             })
         }

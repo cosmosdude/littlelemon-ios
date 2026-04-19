@@ -68,31 +68,15 @@ struct ProfileScreen: View {
     private func avatar() -> some View {
         
         VStack(alignment: .leading) {
-            Text("Avatar *")
+            Text("Avatar")
                 .asLabelText()
             
-            HStack(alignment: .top, spacing: 20) {
-                Group {
-                    Image(systemName: "photo")
-                        .resizable().scaledToFit()
-                        .frame(width: 40, height: 40)
-                }
-                .frame(width: 100, height: 100)
-                .background {
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(Color.DS.highlightWhite)
-                }
+            AvatarInputView(image: Image("")) {
                 
-                VStack(alignment: .leading) {
-                    Button("Remove") {
-                        
-                    }
-                    .buttonStyle(LLPlainButtonStyle(.small))
-                    Button("Add") {
-                        
-                    }
-                    .buttonStyle(LLFilledButtonStyle(.small))
-                }
+            } onUpdate: {
+                
+            } onRemove: {
+                
             }
             
         }

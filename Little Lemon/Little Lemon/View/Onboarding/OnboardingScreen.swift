@@ -9,7 +9,11 @@ import SwiftUI
 
 struct OnboardingScreen: View {
     
-    var onLogin: (() -> Void)?
+    var onLogin: ((User) -> Void)?
+    
+    @State private var user = User()
+    
+    @State private var isSelectingImage = false
     
     var body: some View {
         NavigationStack {
@@ -26,6 +30,13 @@ struct OnboardingScreen: View {
                     Image("images/logo")
                 }
             }
+            .fullScreenCover(isPresented: $isSelectingImage) {
+                ImagePickerView { newImage in
+                    withAnimation {
+                        user.avatar = newImage
+                    }
+                }
+            }
         }
     }
     
@@ -40,6 +51,7 @@ struct OnboardingScreen: View {
                     .font(.DS.subtitle)
                     .foregroundStyle(Color.DS.highlightWhite)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             
             VStack(alignment: .leading, spacing: 20) {
                 HStack(alignment: .top, spacing: 5) {
@@ -55,6 +67,7 @@ struct OnboardingScreen: View {
         }
         .padding(.horizontal, 25)
         .padding(.vertical, 20)
+        
         .background(Color.DS.primaryGreen)
     }
     
@@ -64,39 +77,27 @@ struct OnboardingScreen: View {
             nameFields()
             emailField()
             Button("Next") {
-                onLogin?()
+                onLogin?(user)
             }
             .buttonStyle(LLFilledButtonStyle())
-            .disabled(false)
+            .disabled(user.firstName.isEmpty || !Util.isValidEmail(user.email))
         }
         .padding(.horizontal, 25)
     }
     
     private func avatar() -> some View {
         VStack(alignment: .leading) {
-            Text("Avatar *")
+            Text("Avatar")
                 .asLabelText()
-            
-            HStack(alignment: .top, spacing: 20) {
-                Group {
-                    Image(systemName: "photo")
-                        .resizable().scaledToFit()
-                        .frame(width: 40, height: 40)
-                }
-                .frame(width: 100, height: 100)
-                .background {
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(Color.DS.highlightWhite)
-                }
-                
-                VStack(alignment: .leading) {
-                    Button("Add") {
-                        
-                    }
-                    .buttonStyle(LLFilledButtonStyle(.small))
+            AvatarInputView(image: user.avatar.map { Image(uiImage: $0) }) {
+                isSelectingImage = true
+            } onUpdate: {
+                isSelectingImage = true
+            } onRemove: {
+                withAnimation {
+                    user.avatar = nil
                 }
             }
-            
         }
     }
     
@@ -106,18 +107,15 @@ struct OnboardingScreen: View {
                 Text("First Name *")
                     .asLabelText()
                 
-                TextField("eg. John", text: .constant(""))
+                TextField("eg. John", text: $user.firstName)
                     .textFieldStyle(LLTextFieldStyle())
-                
-                Text("Must not be empty")
-                    .asErrorText()
             }
             
             VStack(alignment: .leading) {
                 Text("Last Name")
                     .asLabelText()
                 
-                TextField("eg. Doe", text: .constant(""))
+                TextField("eg. Doe", text: $user.lastName)
                     .textFieldStyle(LLTextFieldStyle())
             }
         }
@@ -128,17 +126,18 @@ struct OnboardingScreen: View {
             Text("Email *")
                 .asLabelText()
             
-            TextField("eg. John", text: .constant(""))
+            TextField("eg. John", text: $user.email)
                 .textFieldStyle(LLTextFieldStyle())
-            
-            Text("Invalid email.")
-                .asErrorText()
+            if !user.email.isEmpty && !Util.isValidEmail(user.email) {
+                Text("Invalid email.")
+                    .asErrorText()
+            }
         }
     }
+    
+    
 }
 
 #Preview {
-//    NavigationStack {
-        OnboardingScreen()
-//    }
+    OnboardingScreen()
 }
