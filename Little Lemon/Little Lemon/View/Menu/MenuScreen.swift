@@ -46,7 +46,6 @@ struct MenuScreen: View {
                         } else {
                             Image(systemName: "person.fill")
                         }
-                        
                     }
                 }
             }

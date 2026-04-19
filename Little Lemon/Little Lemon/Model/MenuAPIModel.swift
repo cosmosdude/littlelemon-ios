@@ -17,7 +17,9 @@ class MenuAPIModel {
         guard let url = URL(string: "https://raw.githubusercontent.com/Meta-Mobile-Developer-PC/Working-With-Data-API/main/menu.json")
         else { return [] }
         
-        let (data, resp) = try await session.data(from: url)
+        let req = URLRequest(url: url)
+        
+        let (data, _) = try await session.data(for: req)
         return try JSONDecoder().decode(MenuListAPIResponse.self, from: data).menu
     }
     

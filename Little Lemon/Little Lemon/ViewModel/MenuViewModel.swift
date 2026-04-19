@@ -25,10 +25,13 @@ class MenuViewModel: ObservableObject {
     @MainActor
     func fetch() async {
         do {
-            menuItems = try await model.getMenus()
-            let categorySet = Set(menuItems.map(\.category))
-            categories = categorySet.map {
-                .init(id: $0, name: $0.capitalized)
+            let items = try await model.getMenus()
+            let categorySet = Set(items.map(\.category))
+            withAnimation {
+                menuItems = items
+                categories = categorySet.map {
+                    .init(id: $0, name: $0.capitalized)
+                }
             }
         } catch {
             print("Error", error)

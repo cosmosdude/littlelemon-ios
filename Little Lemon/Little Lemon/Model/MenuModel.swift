@@ -6,15 +6,46 @@
 //
 
 import Foundation
+import CoreData
 
 class MenuModel {
     
     let apiModel = MenuAPIModel()
+    let persistance = PersistenceController.shared
     
-    func getMenus() async throws -> [MenuItem] {
-        let resp = try await apiModel.getMenus()
-        return resp.map {
-            .init(id: $0.id, title: $0.title, description: $0.description, price: $0.price, image: $0.image, category: $0.category)
+    @MainActor
+    func getMenus(categories: [String] = []) async throws -> [MenuItem] {
+        do {
+            let resp = try await apiModel.getMenus()
+            
+            persistance.clear()
+            resp.forEach {
+                let dish = Dish(context: persistance.viewContext)
+                dish.itemId = Int64($0.id)
+                dish.title = $0.title
+                dish.image = $0.image
+                dish.desc = $0.description
+                dish.price = $0.price
+                dish.category = $0.category
+            }
+            try persistance.viewContext.save()
+        } catch {
+            print("Error", error)
+        }
+        let fetchRequest = Dish.fetchRequest()
+        fetchRequest.predicate = categories.isEmpty ? NSPredicate(value: true) : NSPredicate(value: true)
+        
+        let dishes = try persistance.viewContext.fetch(fetchRequest)
+        
+        return dishes.map {
+            .init(
+                id: Int($0.itemId),
+                title: $0.title ?? "",
+                description: $0.desc ?? "",
+                price: $0.price ?? "",
+                image: $0.image ?? "",
+                category: $0.category ?? ""
+            )
         }
     }
     
