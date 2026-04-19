@@ -15,6 +15,8 @@ struct OnboardingScreen: View {
     
     @State private var isSelectingImage = false
     
+    @FocusState private var focusedItem: Int!
+    
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -75,7 +77,9 @@ struct OnboardingScreen: View {
         VStack(alignment: .leading, spacing: 20) {
             avatar()
             nameFields()
+            
             emailField()
+            
             Button("Next") {
                 onLogin?(user)
             }
@@ -109,6 +113,12 @@ struct OnboardingScreen: View {
                 
                 TextField("eg. John", text: $user.firstName)
                     .textFieldStyle(LLTextFieldStyle())
+                    .autocorrectionDisabled()
+                    .submitLabel(.next)
+                    .focused($focusedItem, equals: 1)
+                    .onSubmit {
+                        focusedItem! += 1
+                    }
             }
             
             VStack(alignment: .leading) {
@@ -117,6 +127,12 @@ struct OnboardingScreen: View {
                 
                 TextField("eg. Doe", text: $user.lastName)
                     .textFieldStyle(LLTextFieldStyle())
+                    .autocorrectionDisabled()
+                    .submitLabel(.next)
+                    .focused($focusedItem, equals: 2)
+                    .onSubmit {
+                        focusedItem! += 1
+                    }
             }
         }
     }
@@ -128,6 +144,14 @@ struct OnboardingScreen: View {
             
             TextField("eg. John", text: $user.email)
                 .textFieldStyle(LLTextFieldStyle())
+                .keyboardType(.emailAddress)
+                .autocorrectionDisabled()
+                .submitLabel(.done)
+                .focused($focusedItem, equals: 3)
+                .onSubmit {
+                    focusedItem = nil
+                }
+            
             if !user.email.isEmpty && !Util.isValidEmail(user.email) {
                 Text("Invalid email.")
                     .asErrorText()

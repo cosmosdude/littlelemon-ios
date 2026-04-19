@@ -11,7 +11,15 @@ struct ProfileScreen: View {
     
     @Environment(\.dismiss) private var dismiss
     
+    @State private var isSelectingImage = false
     @State private var isConfirmingLogout = false
+    
+    @StateObject private var viewModel = LoginViewModel()
+    
+    @State private var lastUser = User()
+    @State private var user = User()
+    
+    @FocusState private var focusedItem: Int!
     
     var onLogout: (() -> Void)?
     init(onLogout: (() -> Void)? = nil) {
@@ -43,7 +51,17 @@ struct ProfileScreen: View {
                 Image("images/logo")
             }
         }
-        
+        .onAppear {
+            lastUser = viewModel.user ?? User()
+            user = lastUser
+        }
+        .fullScreenCover(isPresented: $isSelectingImage) {
+            ImagePickerView { newImage in
+                withAnimation {
+                    user.avatar = newImage
+                }
+            }
+        }
     }
     
     private func title() -> some View {
@@ -59,9 +77,12 @@ struct ProfileScreen: View {
         VStack(alignment: .leading, spacing: 20) {
             avatar()
             nameFields()
+                .autocorrectionDisabled()
+            
             emailField()
+                .autocorrectionDisabled()
+            
             buttons()
-                .disabled(true)
         }
     }
     
@@ -71,12 +92,14 @@ struct ProfileScreen: View {
             Text("Avatar")
                 .asLabelText()
             
-            AvatarInputView(image: Image("")) {
-                
+            AvatarInputView(image: user.avatar.map { Image(uiImage: $0) }) {
+                isSelectingImage = true
             } onUpdate: {
-                
+                isSelectingImage = true
             } onRemove: {
-                
+                withAnimation {
+                    user.avatar = nil
+                }
             }
             
         }
@@ -88,19 +111,26 @@ struct ProfileScreen: View {
                 Text("First Name *")
                     .asLabelText()
                 
-                TextField("eg. John", text: .constant(""))
+                TextField("eg. John", text: $user.firstName)
                     .textFieldStyle(LLTextFieldStyle())
-                
-                Text("Must not be empty")
-                    .asErrorText()
+                    .submitLabel(.next)
+                    .focused($focusedItem, equals: 1)
+                    .onSubmit {
+                        focusedItem! += 1
+                    }
             }
             
             VStack(alignment: .leading) {
                 Text("Last Name")
                     .asLabelText()
                 
-                TextField("eg. Doe", text: .constant(""))
+                TextField("eg. Doe", text: $user.lastName)
                     .textFieldStyle(LLTextFieldStyle())
+                    .submitLabel(.next)
+                    .focused($focusedItem, equals: 2)
+                    .onSubmit {
+                        focusedItem! += 1
+                    }
             }
         }
     }
@@ -110,25 +140,39 @@ struct ProfileScreen: View {
             Text("Email *")
                 .asLabelText()
             
-            TextField("eg. John", text: .constant(""))
+            TextField("eg. John", text: $user.email)
                 .textFieldStyle(LLTextFieldStyle())
+                .keyboardType(.emailAddress)
+                .autocorrectionDisabled()
+                .submitLabel(.done)
+                .focused($focusedItem, equals: 3)
+                .onSubmit {
+                    focusedItem = nil
+                }
             
-            Text("Invalid email.")
-                .asErrorText()
+            if !user.email.isEmpty && !Util.isValidEmail(user.email) {
+                Text("Invalid email.")
+                    .asErrorText()
+            }
         }
     }
     
     private func buttons() -> some View {
         HStack(alignment: .top, spacing: 20) {
-            Button("Discard Changes") {
-                
+            Button("Discard") {
+                withAnimation {
+                    user = lastUser
+                }
             }
             .buttonStyle(LLPlainButtonStyle())
+            .disabled(lastUser == user)
             
             Button("Save") {
-                
+                viewModel.user = user
+                lastUser = user
             }
             .buttonStyle(LLBorderedButtonStyle())
+            .disabled(lastUser == user || user.firstName.isEmpty || !Util.isValidEmail(user.email))
         }
     }
     

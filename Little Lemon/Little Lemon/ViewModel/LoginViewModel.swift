@@ -21,8 +21,7 @@ class LoginViewModel: UserViewModel {
     }
 }
 
-struct User: Codable {
-    
+struct User: Equatable, Codable {
     
     var avatar: UIImage? = nil
     var firstName: String = ""
@@ -59,6 +58,10 @@ struct User: Codable {
         try container.encode(self.firstName, forKey: .firstName)
         try container.encode(self.lastName, forKey: .lastName)
         try container.encode(self.email, forKey: .email)
+    }
+    
+    static func ==(_ lhs: User, _ rhs: User) -> Bool {
+        lhs.avatar === rhs.avatar && lhs.firstName == rhs.firstName && lhs.lastName == rhs.lastName && lhs.email == rhs.email
     }
     
 }
