@@ -21,3 +21,18 @@ extension Font {
         static var captionText: Font { .Karla.regular(size: 14) }
     }
 }
+
+extension Color {
+    
+    enum DS {
+        static var clear: Color { Color("designsystem/clear", bundle: .main) }
+        static var highlightBlack: Color { Color("designsystem/highlightBlack", bundle: .main) }
+        static var highlightWhite: Color { Color("designsystem/highlightWhite", bundle: .main) }
+        static var primaryGreen: Color { Color("designsystem/primaryGreen", bundle: .main) }
+        static var primaryYellow: Color { Color("designsystem/primaryYellow", bundle: .main) }
+        static var secondaryPink: Color { Color("designsystem/secondaryPink", bundle: .main) }
+        static var secondaryRed: Color { Color("designsystem/secondaryRed", bundle: .main) }
+        static var white: Color { Color("designsystem/white", bundle: .main) }
+    }
+    
+}
