@@ -14,7 +14,8 @@ extension Font {
         static var leadText: Font { .Karla.medium(size: 18) }
         static var cta: Font { leadText }
         static var sectionTitle: Font { .Karla.extraBold(size: 20) }
-        static var categoryTitle: Font { .Karla.extraBold(size: 16) }
+        static var sectionSubtitle: Font { .Karla.extraBold(size: 16) }
+        static var categoryTitle: Font { sectionSubtitle }
         static var cardTitle: Font { .Karla.bold(size: 16) }
         static var paragraphText: Font { .Karla.regular(size: 16) }
         static var highlightText: Font { .Karla.medium(size: 16) }
@@ -35,4 +36,16 @@ extension Color {
         static var white: Color { Color("designsystem/white", bundle: .main) }
     }
     
+}
+
+extension Text {
+    func asLabelText() -> some View {
+        font(.DS.highlightText)
+            .foregroundStyle(Color.DS.highlightBlack)
+    }
+    
+    func asErrorText() -> some View {
+        font(.DS.captionText)
+            .foregroundStyle(Color.DS.secondaryRed)
+    }
 }

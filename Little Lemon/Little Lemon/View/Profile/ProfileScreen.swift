@@ -9,14 +9,149 @@ import SwiftUI
 
 struct ProfileScreen: View {
     
+    @Environment(\.dismiss) private var dismiss
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                title()
+                    .padding(.horizontal, 25)
+                
+                form()
+                    .padding(.horizontal, 25)
+                
+                logoutButton()
+                    .padding(.horizontal, 25)
+            }
+        }
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden()
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button { dismiss() } label: {
+                    Image(systemName: "arrow.left")
+                }
+            }
+            ToolbarItem(placement: .principal) {
+                Image("images/logo")
+            }
+        }
+        
+    }
+    
+    private func title() -> some View {
+        Text("Personal Information")
+            .lineSpacing(-21)
             .font(.DS.displayTitle)
-            .foregroundStyle(Color.DS.primaryYellow)
+            .foregroundStyle(Color.DS.highlightBlack)
+            .multilineTextAlignment(.leading)
+            .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    
+    private func form() -> some View {
+        VStack(alignment: .leading, spacing: 20) {
+            avatar()
+            nameFields()
+            emailField()
+            buttons()
+                .disabled(true)
+        }
+    }
+    
+    private func avatar() -> some View {
+        
+        VStack(alignment: .leading) {
+            Text("Avatar *")
+                .asLabelText()
+            
+            HStack(alignment: .top, spacing: 20) {
+                Group {
+                    Image(systemName: "photo")
+                        .resizable().scaledToFit()
+                        .frame(width: 40, height: 40)
+                }
+                .frame(width: 100, height: 100)
+                .background {
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color.DS.highlightWhite)
+                }
+                
+                VStack(alignment: .leading) {
+                    Button("Remove") {
+                        
+                    }
+                    .buttonStyle(LLPlainButtonStyle(.small))
+                    Button("Add") {
+                        
+                    }
+                    .buttonStyle(LLFilledButtonStyle(.small))
+                }
+            }
+            
+        }
+    }
+    
+    private func nameFields() -> some View {
+        HStack(alignment: .top, spacing: 20) {
+            VStack(alignment: .leading) {
+                Text("First Name *")
+                    .asLabelText()
+                
+                TextField("eg. John", text: .constant(""))
+                    .textFieldStyle(LLTextFieldStyle())
+                
+                Text("Must not be empty")
+                    .asErrorText()
+            }
+            
+            VStack(alignment: .leading) {
+                Text("Last Name")
+                    .asLabelText()
+                
+                TextField("eg. Doe", text: .constant(""))
+                    .textFieldStyle(LLTextFieldStyle())
+            }
+        }
+    }
+    
+    private func emailField() -> some View {
+        VStack(alignment: .leading) {
+            Text("Email *")
+                .asLabelText()
+            
+            TextField("eg. John", text: .constant(""))
+                .textFieldStyle(LLTextFieldStyle())
+            
+            Text("Invalid email.")
+                .asErrorText()
+        }
+    }
+    
+    private func buttons() -> some View {
+        HStack(alignment: .top, spacing: 20) {
+            Button("Discard Changes") {
+                
+            }
+            .buttonStyle(LLPlainButtonStyle())
+            
+            Button("Save") {
+                
+            }
+            .buttonStyle(LLBorderedButtonStyle())
+        }
+    }
+    
+    private func logoutButton() -> some View {
+        Button("Logout") {
+            
+        }
+        .buttonStyle(LLFilledButtonStyle())
     }
     
 }
 
 #Preview {
-    ProfileScreen()
+    NavigationStack {
+        ProfileScreen()
+    }
 }
