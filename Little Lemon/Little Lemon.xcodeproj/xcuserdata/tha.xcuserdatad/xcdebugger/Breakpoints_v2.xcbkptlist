@@ -18,36 +18,6 @@
             endingLineNumber = "175"
             landmarkName = "buttons()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "F8497043-238B-491B-BB76-991E76B9F3ED - 3711f8ca75632e5a"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Little_Lemon.ProfileScreen.logoutButton() -&gt; some"
-                  moduleName = "Little Lemon.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/tha/Desktop/personal/Coursera/Meta%20iOS%20developer/Capstone/littlelemon-ios/Little%20Lemon/Little%20Lemon/View/Profile/ProfileScreen.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "177"
-                  endingLineNumber = "177">
-               </Location>
-               <Location
-                  uuid = "F8497043-238B-491B-BB76-991E76B9F3ED - 1c1727bd9fefc8c3"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 () -&gt; SwiftUI.TupleView&lt;(&lt;&lt;opaque return type of SwiftUI.View.disabled(Swift.Bool) -&gt; some&gt;&gt;.0, &lt;&lt;opaque return type of SwiftUI.View.disabled(Swift.Bool) -&gt; some&gt;&gt;.0)&gt; in Little_Lemon.ProfileScreen.buttons() -&gt; some"
-                  moduleName = "Little Lemon.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/tha/Desktop/personal/Coursera/Meta%20iOS%20developer/Capstone/littlelemon-ios/Little%20Lemon/Little%20Lemon/View/Profile/ProfileScreen.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "175"
-                  endingLineNumber = "175">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

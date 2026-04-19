@@ -12,6 +12,8 @@ struct MenuScreen: View {
     @State private var navPath = NavigationPath()
     var onLogout: (() -> Void)?
     
+    @StateObject private var userViewModel = UserViewModel()
+    
     private let categories = [
         "Lunch", "Main", "Deserts", "A La Carte", "Specials"
     ]
@@ -35,7 +37,15 @@ struct MenuScreen: View {
                     Button {
                         navPath.append("profile")
                     } label: {
-                        Image(systemName: "person.fill")
+                        if let avatar = userViewModel.user?.avatar {
+                            Image(uiImage: avatar)
+                                .resizable().scaledToFill()
+                                .frame(width: 30, height: 30)
+                                .clipShape(Circle())
+                        } else {
+                            Image(systemName: "person.fill")
+                        }
+                        
                     }
                 }
             }
