@@ -8,7 +8,7 @@
 import SwiftUI
 
 extension Font {
-    enum DesignSystem {
+    enum DS {
         static var displayTitle: Font { .MarkaziText.medium(size: 64) }
         static var subtitle: Font { .MarkaziText.regular(size: 40) }
         static var leadText: Font { .Karla.medium(size: 18) }
