@@ -4,9 +4,12 @@ import Foundation
 class PersistenceController {
     static let shared = PersistenceController()
 
-    private var container: NSPersistentContainer!
+    private var container: NSPersistentContainer
 
-    private init() { }
+    private init() {
+        container = NSPersistentContainer(name: "LittleLemon")
+        container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
+    }
     
     func load() async throws {
         try await prepareContainer()
@@ -15,9 +18,6 @@ class PersistenceController {
     
     func prepareContainer() async throws {
         return try await withCheckedThrowingContinuation { cont in
-            container = NSPersistentContainer(name: "LittleLemon")
-            container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
-            
             container.loadPersistentStores(completionHandler: { _, error in
                 if let error {
                     cont.resume(throwing: error)

@@ -80,7 +80,7 @@ struct OnboardingScreen: View {
             
             emailField()
             
-            Button("Next") {
+            Button("Get Started") {
                 onLogin?(user)
             }
             .buttonStyle(LLFilledButtonStyle())

@@ -56,6 +56,7 @@ struct MenuScreen: View {
                 await menuViewModel.fetch()
             }
         }
+        
     }
     
     private func hero() -> some View {

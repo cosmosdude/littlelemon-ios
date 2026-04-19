@@ -54,6 +54,7 @@ class MenuModel {
         }
         fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: predicates)
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true, selector: #selector(NSString.localizedCaseInsensitiveCompare))]
+        
         let dishes = try persistance.viewContext.fetch(fetchRequest)
         
         // convert to domain type
