@@ -12,14 +12,23 @@ import SwiftUI
 class UserViewModel: ObservableObject {
     
     private let userDefaults = UserDefaults.standard
+    private let firstTimeKey = "firsttime"
     private let key = "user"
+    
+    var isFirstTime: Bool {
+        userDefaults.bool(forKey: firstTimeKey)
+    }
+    
+    func unsetFirstTime() {
+        userDefaults.set(false, forKey: firstTimeKey)
+    }
     
     var isLoggedIn: Bool { user != nil }
     
-    static let notificationName = Notification.Name("UserUpdated")
+    static let notificationName = Notification.Name("Updated")
     
     init() {
-        NotificationCenter.default.addObserver(self, selector: #selector(onUserUpdate), name: Self.notificationName, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onUpdate), name: Self.notificationName, object: nil)
     }
     
     /// Get the user
@@ -39,7 +48,7 @@ class UserViewModel: ObservableObject {
     }
     
     @objc
-    private func onUserUpdate() {
+    private func onUpdate() {
         objectWillChange.send()
     }
     

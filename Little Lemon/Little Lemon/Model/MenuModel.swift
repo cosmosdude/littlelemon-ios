@@ -50,10 +50,10 @@ class MenuModel {
             predicates.append(NSPredicate(format: "category IN %@", categories))
         }
         if !query.isEmpty {
-            predicates.append(NSPredicate(format: "title CONTAINS %@", query))
+            predicates.append(NSPredicate(format: "title CONTAINS[cd] %@", query))
         }
-        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-        
+        fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: predicates)
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true, selector: #selector(NSString.localizedCaseInsensitiveCompare))]
         let dishes = try persistance.viewContext.fetch(fetchRequest)
         
         // convert to domain type

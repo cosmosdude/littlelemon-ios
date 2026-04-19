@@ -36,6 +36,9 @@ struct LLBorderedButtonStyle: ButtonStyle {
             )
             .padding(.horizontal, 10)
             .background {
+                Color.white.opacity(0.01)
+            }
+            .background {
                 RoundedRectangle(cornerRadius: 16)
                     .stroke(
                         isEnabled
