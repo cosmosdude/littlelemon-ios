@@ -11,6 +11,7 @@ struct OnboardingScreen: View {
     
     var onLogin: ((User) -> Void)?
     
+    @State private var page = 0
     @State private var user = User()
     
     @State private var isSelectingImage = false
@@ -74,19 +75,46 @@ struct OnboardingScreen: View {
     }
     
     private func form() -> some View {
-        VStack(alignment: .leading, spacing: 20) {
-            avatar()
-            nameFields()
+        VStack(spacing: 10) {
             
-            emailField()
-            
-            Button("Get Started") {
-                onLogin?(user)
+            HStack {
+                ForEach(0..<3) { index in
+                    Circle()
+                        .stroke(Color.DS.primaryGreen, lineWidth: 2)
+                        .frame(width: 15, height: 15)
+                        .overlay {
+                            if index == page {
+                                Circle()
+                                    .fill(Color.DS.primaryGreen)
+                                    .frame(width: 8, height: 8)
+                            }
+                        }
+                    
+                }
             }
-            .buttonStyle(LLFilledButtonStyle())
-            .disabled(user.firstName.isEmpty || !Util.isValidEmail(user.email))
+            
+            TabView(selection: $page) {
+                firstNameField()
+                    .frame(maxHeight: .infinity, alignment: .top)
+                    .padding(.horizontal, 25)
+                    .tag(0)
+                
+                lastNameField()
+                    .frame(maxHeight: .infinity, alignment: .top)
+                    .padding(.horizontal, 25)
+                    .tag(1)
+                
+                emailField()
+                    .frame(maxHeight: .infinity, alignment: .top)
+                    .padding(.horizontal, 25)
+                    .tag(2)
+                
+            }
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .indexViewStyle(.page(backgroundDisplayMode: .never))
+            .frame(height: 200)
+//            .border(Color.green)
         }
-        .padding(.horizontal, 25)
     }
     
     private func avatar() -> some View {
@@ -105,35 +133,53 @@ struct OnboardingScreen: View {
         }
     }
     
-    private func nameFields() -> some View {
-        HStack(alignment: .top, spacing: 20) {
-            VStack(alignment: .leading) {
-                Text("First Name *")
-                    .asLabelText()
-                
-                TextField("eg. John", text: $user.firstName)
-                    .textFieldStyle(LLTextFieldStyle())
-                    .autocorrectionDisabled()
-                    .submitLabel(.next)
-                    .focused($focusedItem, equals: 1)
-                    .onSubmit {
-                        focusedItem! += 1
-                    }
-            }
+    private func firstNameField() -> some View {
+        VStack(alignment: .leading) {
+            Text("First Name *")
+                .asLabelText()
             
-            VStack(alignment: .leading) {
-                Text("Last Name")
-                    .asLabelText()
-                
-                TextField("eg. Doe", text: $user.lastName)
-                    .textFieldStyle(LLTextFieldStyle())
-                    .autocorrectionDisabled()
-                    .submitLabel(.next)
-                    .focused($focusedItem, equals: 2)
-                    .onSubmit {
-                        focusedItem! += 1
+            TextField("eg. John", text: $user.firstName)
+                .textFieldStyle(LLTextFieldStyle())
+                .autocorrectionDisabled()
+                .submitLabel(.next)
+                .onSubmit {
+                    if !user.firstName.isEmpty {
+                        page += 1
                     }
+                }
+            
+            Button("Next") {
+                withAnimation {
+                    page += 1
+                }
             }
+            .buttonStyle(LLFilledButtonStyle())
+            .disabled(user.firstName.isEmpty)
+        }
+    }
+    
+    private func lastNameField() -> some View {
+        VStack(alignment: .leading) {
+            Text("Last Name *")
+                .asLabelText()
+            
+            TextField("eg. Doe", text: $user.lastName)
+                .textFieldStyle(LLTextFieldStyle())
+                .autocorrectionDisabled()
+                .submitLabel(.next)
+                .onSubmit {
+                    if !user.lastName.isEmpty {
+                        page += 1
+                    }
+                }
+            
+            Button("Next") {
+                withAnimation {
+                    page += 1
+                }
+            }
+            .buttonStyle(LLFilledButtonStyle())
+            .disabled(user.lastName.isEmpty)
         }
     }
     
@@ -147,15 +193,22 @@ struct OnboardingScreen: View {
                 .keyboardType(.emailAddress)
                 .autocorrectionDisabled()
                 .submitLabel(.done)
-                .focused($focusedItem, equals: 3)
                 .onSubmit {
-                    focusedItem = nil
+                    if !user.lastName.isEmpty {
+                        page += 1
+                    }
                 }
             
             if !user.email.isEmpty && !Util.isValidEmail(user.email) {
                 Text("Invalid email.")
                     .asErrorText()
             }
+            
+            Button("Get Started") {
+                onLogin?(user)
+            }
+            .buttonStyle(LLFilledButtonStyle())
+            .disabled(!Util.isValidEmail(user.email))
         }
     }
     
