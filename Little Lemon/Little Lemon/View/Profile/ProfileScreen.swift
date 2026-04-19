@@ -11,6 +11,13 @@ struct ProfileScreen: View {
     
     @Environment(\.dismiss) private var dismiss
     
+    @State private var isConfirmingLogout = false
+    
+    var onLogout: (() -> Void)?
+    init(onLogout: (() -> Void)? = nil) {
+        self.onLogout = onLogout
+    }
+    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
@@ -143,9 +150,18 @@ struct ProfileScreen: View {
     
     private func logoutButton() -> some View {
         Button("Logout") {
-            
+            isConfirmingLogout = true
         }
         .buttonStyle(LLFilledButtonStyle())
+        .confirmationDialog(
+            "Logout?",
+            isPresented: $isConfirmingLogout
+        ) {
+            Button("Confirm") {
+                onLogout?()
+            }
+            Button("Cancel") { }
+        }
     }
     
 }

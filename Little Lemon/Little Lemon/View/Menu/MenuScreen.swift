@@ -9,32 +9,38 @@ import SwiftUI
 
 struct MenuScreen: View {
     
-    
+    @State private var navPath = NavigationPath()
+    var onLogout: (() -> Void)?
     
     private let categories = [
         "Lunch", "Main", "Deserts", "A La Carte", "Specials"
     ]
     
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: 0, pinnedViews: .sectionHeaders) {
-                hero()
-                categoryFilters()
-                menus()
-            }
-        }
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                Image("images/logo")
-            }
-            
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    
-                } label: {
-                    Image(systemName: "person.fill")
+        NavigationStack(path: $navPath) {
+            ScrollView {
+                LazyVStack(spacing: 0, pinnedViews: .sectionHeaders) {
+                    hero()
+                    categoryFilters()
+                    menus()
                 }
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Image("images/logo")
+                }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        navPath.append("profile")
+                    } label: {
+                        Image(systemName: "person.fill")
+                    }
+                }
+            }
+            .navigationDestination(for: String.self) { _ in
+                ProfileScreen(onLogout: onLogout)
             }
         }
     }
@@ -142,7 +148,7 @@ struct MenuScreen: View {
 }
 
 #Preview {
-    NavigationStack {
+//    NavigationStack {
         MenuScreen()
-    }
+//    }
 }

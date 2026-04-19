@@ -8,18 +8,23 @@
 import SwiftUI
 
 struct OnboardingScreen: View {
+    
+    var onLogin: (() -> Void)?
+    
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                hero()
-                form()
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 20) {
+                    hero()
+                    form()
+                }
+                .padding(.bottom, 20)
             }
-            .padding(.bottom, 20)
-        }
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                Image("images/logo")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Image("images/logo")
+                }
             }
         }
     }
@@ -59,10 +64,10 @@ struct OnboardingScreen: View {
             nameFields()
             emailField()
             Button("Next") {
-                
+                onLogin?()
             }
             .buttonStyle(LLFilledButtonStyle())
-            .disabled(true)
+            .disabled(false)
         }
         .padding(.horizontal, 25)
     }
@@ -133,7 +138,7 @@ struct OnboardingScreen: View {
 }
 
 #Preview {
-    NavigationStack {
+//    NavigationStack {
         OnboardingScreen()
-    }
+//    }
 }
