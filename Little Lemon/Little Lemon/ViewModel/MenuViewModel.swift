@@ -16,6 +16,8 @@ class MenuViewModel: ObservableObject {
     
     private var selectedCategoryIds = Set<String>()
     
+    private var query = ""
+    
     @Published
     private(set) var categories = [MenuCategory]()
     
@@ -25,17 +27,25 @@ class MenuViewModel: ObservableObject {
     @MainActor
     func fetch() async {
         do {
-            let items = try await model.getMenus()
-            let categorySet = Set(items.map(\.category))
+            let items = try await model.getMenus(query: query, categories: Array(selectedCategoryIds))
+            let categories = try await model.getCategories()
             withAnimation {
                 menuItems = items
-                categories = categorySet.map {
-                    .init(id: $0, name: $0.capitalized)
-                }
+                self.categories = categories
             }
         } catch {
             print("Error", error)
         }
+    }
+    
+    func setQuery(_ text: String) {
+        objectWillChange.send()
+        query = text
+        Task { await fetch() }
+    }
+    
+    func getQuery() -> String {
+        query
     }
     
     func toggleCategory(id: String) {
@@ -44,6 +54,9 @@ class MenuViewModel: ObservableObject {
             selectedCategoryIds.remove(id)
         } else {
             selectedCategoryIds.insert(id)
+        }
+        Task {
+            await fetch()
         }
     }
     

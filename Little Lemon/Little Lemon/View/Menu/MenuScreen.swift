@@ -82,7 +82,11 @@ struct MenuScreen: View {
                         .frame(width: 125, height: 125)
                 }
                 
-                TextField("Search", text: .constant(""))
+                TextField("Search", text: .init(get: {
+                    menuViewModel.getQuery()
+                }, set: {
+                    menuViewModel.setQuery($0)
+                }))
                     .textFieldStyle(LLTextFieldStyle(icon: Image(systemName: "magnifyingglass")))
             }
         }

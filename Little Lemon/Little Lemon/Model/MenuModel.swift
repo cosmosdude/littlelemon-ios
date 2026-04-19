@@ -14,29 +14,49 @@ class MenuModel {
     let persistance = PersistenceController.shared
     
     @MainActor
-    func getMenus(categories: [String] = []) async throws -> [MenuItem] {
-        do {
-            let resp = try await apiModel.getMenus()
-            
-            persistance.clear()
-            resp.forEach {
-                let dish = Dish(context: persistance.viewContext)
-                dish.itemId = Int64($0.id)
-                dish.title = $0.title
-                dish.image = $0.image
-                dish.desc = $0.description
-                dish.price = $0.price
-                dish.category = $0.category
+    func getMenus(query: String = "", categories: [String] = []) async throws -> [MenuItem] {
+        let isFiltering = !(query.isEmpty && categories.isEmpty)
+        // only when not filtering, fetch from network
+        if !isFiltering {
+            do {
+                // load from API
+                let resp = try await apiModel.getMenus()
+                
+                // Clear existing ones
+                persistance.clear()
+                // Create in-memory instances
+                resp.forEach {
+                    let dish = Dish(context: persistance.viewContext)
+                    dish.itemId = Int64($0.id)
+                    dish.title = $0.title
+                    dish.image = $0.image
+                    dish.desc = $0.description
+                    dish.price = $0.price
+                    dish.category = $0.category
+                }
+                // save them
+                try persistance.viewContext.save()
+            } catch {
+                print("Error", error)
             }
-            try persistance.viewContext.save()
-        } catch {
-            print("Error", error)
         }
+        
+        
+        
+        // load from core data
         let fetchRequest = Dish.fetchRequest()
-        fetchRequest.predicate = categories.isEmpty ? NSPredicate(value: true) : NSPredicate(value: true)
+        var predicates = [NSPredicate(value: true)]
+        if !categories.isEmpty {
+            predicates.append(NSPredicate(format: "category IN %@", categories))
+        }
+        if !query.isEmpty {
+            predicates.append(NSPredicate(format: "title CONTAINS %@", query))
+        }
+        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         
         let dishes = try persistance.viewContext.fetch(fetchRequest)
         
+        // convert to domain type
         return dishes.map {
             .init(
                 id: Int($0.itemId),
@@ -47,6 +67,14 @@ class MenuModel {
                 category: $0.category ?? ""
             )
         }
+    }
+    
+    @MainActor
+    func getCategories() async throws -> [MenuCategory] {
+        let fetchRequest = Dish.fetchRequest()
+        let dishes = try persistance.viewContext.fetch(fetchRequest)
+        let set = Set(dishes.compactMap(\.category))
+        return set.map { .init(id: $0, name: $0.capitalized) }.sorted { $0.name < $1.name }
     }
     
 }
